@@ -2,12 +2,24 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+//---Also Needed for YouTube Data Api---
+plugins {
+    //id 'com.android.application'
+    id 'com.google.gms.google-services'
+}
+//---                   ---
+
+//Build.gradle (project) file also updated
+//Added because of conflict with YouTube API
+configurations {
+    all*.exclude group: 'com.google.guava', module: 'guava-jdk5'
+}
 android {
-    namespace 'com.example.bit603_mitchell_travis_5080526_as3'
+    namespace 'com.example.googlesigni'
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.bit603_mitchell_travis_5080526_as3"
+        applicationId "com.example.googlesigni"
         minSdk 24
         targetSdk 36
         versionCode 1
@@ -37,4 +49,32 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation 'com.google.android.gms:play-services-auth:20.5.0'
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:31.4.0')
+
+// Add the dependency for the Firebase Authentication library
+// When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-auth'
+
+// Also add the dependency for the Google Play services library and specify its version
+    implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2' //to display user profile picture
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:12.0.0' //for youtube player
+
+    // Room persistence Library
+    implementation "androidx.room:room-runtime:2.5.1"
+    annotationProcessor "androidx.room:room-compiler:2.5.1"
+    //---YouTube API ---//
+    //configuration added because of conflicts
+    implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation('com.google.api-client:google-api-client-android:1.22.0'){
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation('com.google.apis:google-api-services-youtube:v3-rev183-1.22.0'){
+        exclude group: 'org.apache.httpcomponents'
+    }
+    //---YOUTUBE API END---//
+    implementation 'com.google.firebase:firebase-firestore' //firestore database
 }
