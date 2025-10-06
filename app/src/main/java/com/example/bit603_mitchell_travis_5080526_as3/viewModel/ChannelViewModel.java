@@ -9,15 +9,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ChannelViewModel extends ViewModel {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     public void writeToFirebase(){
         // Connecting with the Firebase Realtime Database
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         //get the datbase channel collection
         Map<String, Object> channel = new HashMap<>();
         channel.put("channelId", "UC_xxx");
@@ -39,5 +41,23 @@ public class ChannelViewModel extends ViewModel {
                         Log.e("FireStoreError", "cannot add data in FireStore");
                     }
                 });
+    }
+
+    public void readChannel(String channelId){
+        db.collection("youtube_channels")
+                .document(channelId)
+                .get()
+                .addOnSuccessListener(
+                        new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot document) {
+                                if(document.exists()){
+                                    String channelId = document.getString("channelId");
+                                    assert channelId != null;
+                                    Log.d("FIRESTORE_READ",channelId);
+                                }
+                            }
+                        }
+                );
     }
 }

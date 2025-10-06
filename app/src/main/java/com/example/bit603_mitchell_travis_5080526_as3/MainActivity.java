@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         ChannelViewModel channelInsert = new ChannelViewModel();
         channelInsert.writeToFirebase();
+        channelInsert.readChannel("oNATRW73xJS9frychNr7");
 
     }
 }
