@@ -17,12 +17,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.bit603_mitchell_travis_5080526_as3.Model.User;
+import com.example.bit603_mitchell_travis_5080526_as3.viewModel.UserViewModel;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,6 +43,17 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+
+        //----CHECK IF USER SIGNED IN USING USERVIEWMODEL LIVE DATA----
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.checkUserSignedIn(this);
+        userViewModel.getUserLiveData().observe(this,user->{
+            if(user != null){
+                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                startActivity(intent);
+            }
+
+        });
 
         oneTapClient = Identity.getSignInClient(this);
         signInRequest = BeginSignInRequest.builder()
@@ -71,7 +86,17 @@ public class LoginActivity extends AppCompatActivity {
                                 SignInCredential credential = oneTapClient
                                         .getSignInCredentialFromIntent(result.getData());
                                 String idToken = credential.getGoogleIdToken();
+                                String userId = credential.getId();
+                                String name = credential.getDisplayName();
+                                String email = credential.getId();
+                                String photoUrl = credential.getProfilePictureUri() != null
+                                        ? credential.getProfilePictureUri().toString()
+                                        : null;
+
                                 if(idToken != null){
+                                    User user = new User(userId, name, email, photoUrl);
+                                    userViewModel.saveUser(user); //save user to firestore database
+                                    userViewModel.setUserLiveData(user);
                                     Intent intent = new Intent(getApplicationContext(),
                                             MainActivity.class);
                                     intent.putExtra("CREDENTIAL",credential);
