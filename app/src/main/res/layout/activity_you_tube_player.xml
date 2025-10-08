@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    tools:context=".YouTubePlayerActivity"
+    android:orientation="vertical" android:padding="15dp">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="28sp"
+        android:layout_gravity="center"
+        android:text="Watch Video"/>
+
+    <View
+        android:layout_width="match_parent" android:layout_height="3dp"
+        android:background="@color/design_default_color_primary_dark"
+        android:layout_marginBottom="10dp"/>
+    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+        android:id="@+id/youtube_player_view"
+        android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent" android:layout_height="3dp"
+        android:background="@color/design_default_color_primary_dark"
+        android:layout_marginBottom="10dp" android:layout_marginTop="10dp"/>
+    <TextView
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Enter YouTube Video URL" android:textSize="20sp"
+        android:textColor="@color/design_default_color_primary_dark"/>
+    <EditText
+        android:id="@+id/ytVideoUrlEt" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="YouTube Video URL"/>
+    <Button
+        android:id="@+id/ytPlayVideoBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play Video"
+        android:textSize="24sp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>
