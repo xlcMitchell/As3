@@ -20,7 +20,7 @@ public class ChannelViewModel extends ViewModel {
     public void writeToFirebase(){
         // Connecting with the Firebase Realtime Database
 
-        //get the datbase channel collection
+        /*
         Map<String, Object> channel = new HashMap<>();
         channel.put("channelId", "UC_xxx");
         channel.put("channelName", "My Channel");
@@ -41,6 +41,9 @@ public class ChannelViewModel extends ViewModel {
                         Log.e("FireStoreError", "cannot add data in FireStore");
                     }
                 });
+
+
+         */
     }
 
     public void readChannel(String channelId){

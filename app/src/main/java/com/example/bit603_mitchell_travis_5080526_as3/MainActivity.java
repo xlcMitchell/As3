@@ -35,5 +35,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button youTubeListBtn = findViewById(R.id.listYouTubeChannel);
+        youTubeListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent intent = new Intent(MainActivity.this,YouTubeListActivity.class);
+               startActivity(intent);
+            }
+        });
+
     }
 }
