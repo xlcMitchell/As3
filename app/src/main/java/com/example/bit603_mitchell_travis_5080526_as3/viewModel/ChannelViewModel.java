@@ -11,9 +11,16 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class ChannelViewModel extends ViewModel {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -62,5 +69,43 @@ public class ChannelViewModel extends ViewModel {
                             }
                         }
                 );
+    }
+
+    public void fetchChannelData(String token){
+        Retrofit retrofitClient = RetrofitClient.getClient();
+        YouTubeChannelService service = retrofitClient.create(YouTubeChannelService.class);
+        String authHeader = "Bearer " + token;
+        String channelId = "UCn9ZHYVdOBqAkBQ7H7rjnQA";
+        Call<JsonObject> call = service.getChannelInfo("snippet,statistics", channelId, authHeader);
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    JsonObject json = response.body();
+                    Log.d("YouTubeAPI", "Response JSON: " + json.toString());
+
+                    String title = json.getAsJsonArray("items")
+                            .get(0)
+                            .getAsJsonObject()
+                            .getAsJsonObject("snippet")
+                            .get("title")
+                            .getAsString();
+                    Log.d("YouTubeAPI", "Channel Title: " + title);
+                } else {
+                    try {
+                        Log.e("YouTubeAPI", "Error: " + response.code() + " " + response.message()
+                                + "\nBody: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("YouTubeAPI", "Failure: " + t.getMessage());
+            }
+        });
     }
 }

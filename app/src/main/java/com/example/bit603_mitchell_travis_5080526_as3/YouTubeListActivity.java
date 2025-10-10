@@ -23,6 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.bit603_mitchell_travis_5080526_as3.viewModel.ChannelViewModel;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -42,12 +43,15 @@ public class YouTubeListActivity extends AppCompatActivity {
     private static final int REQUEST_ACCOUNT_PICKER = 1000;
     private static final int REQUEST_AUTHORIZATION = 1001;
     private GoogleAccountCredential credential;
+    private String token;
+    ChannelViewModel channelViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_you_tube_list); // make sure you have this layout
 
+        channelViewModel = new ChannelViewModel();
         // Initialize the Google OAuth credential
         credential = GoogleAccountCredential.usingOAuth2(
                 this,
@@ -70,8 +74,9 @@ public class YouTubeListActivity extends AppCompatActivity {
                 // Retrieve OAuth token in a background thread
                 new Thread(() -> {
                     try {
-                        String token = credential.getToken();
+                        token = credential.getToken();
                         Log.d("YouTubeListActivity", "OAuth Token: " + token);
+                        channelViewModel.fetchChannelData(token); //send request
                     } catch (UserRecoverableAuthException e) {
                         //executes if the user needs to provide consent.. UserRecoverableAuthException e provides an intent
                         //to achieve this
