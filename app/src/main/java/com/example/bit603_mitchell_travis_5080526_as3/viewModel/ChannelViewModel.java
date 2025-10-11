@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,7 +70,7 @@ public class ChannelViewModel extends ViewModel {
         YouTubeChannelService service = retrofitClient.create(YouTubeChannelService.class);
         String authHeader = "Bearer " + token;
         String channelId = "UCDPM_n1atn2ijUwHd0NNRQw";
-        Call<JsonObject> call = service.getChannelInfo("snippet,statistics", channelId, authHeader);
+        Call<JsonObject> call = service.getChannelInfo("snippet,statistics,contentDetails", channelId, authHeader);
 
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -87,6 +88,7 @@ public class ChannelViewModel extends ViewModel {
                             .getAsString();
                     Log.d("YouTubeAPI", "Channel Title: " + title);
                     parseChannelJson(json,channelId);
+                    parseUploadId(json);
                 } else {
                     try {
                         Log.e("YouTubeAPI", "Error: " + response.code() + " " + response.message()
@@ -104,6 +106,7 @@ public class ChannelViewModel extends ViewModel {
         });
     }
 
+    //Parse channel info and update livedata and database
     public void parseChannelJson(JsonObject json, String channelId) {
         JsonObject item = json.getAsJsonArray("items").get(0).getAsJsonObject();
         JsonObject snippet = item.getAsJsonObject("snippet");
@@ -119,5 +122,18 @@ public class ChannelViewModel extends ViewModel {
                 channelLiveData.setValue(channel); //update live data for channel
                 saveOrUpdateChannel(channel);
 
+    }
+
+    private String parseUploadId(JsonObject channelJson) {
+        try {
+            JsonObject itemsObj = channelJson.getAsJsonArray("items").get(0).getAsJsonObject();
+            JsonObject contentDetails = itemsObj.getAsJsonObject("contentDetails");
+            JsonObject relatedPlaylists = contentDetails.getAsJsonObject("relatedPlaylists");
+            Log.d("JSON_RESPONSE",relatedPlaylists.get("uploads").getAsString());
+            return relatedPlaylists.get("uploads").getAsString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
