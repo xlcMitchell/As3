@@ -23,8 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ChannelViewModel channelInsert = new ChannelViewModel();
-        channelInsert.writeToFirebase();
-        channelInsert.readChannel("oNATRW73xJS9frychNr7");
+
 
         Button playerBtn = findViewById(R.id.watchVideo);
         playerBtn.setOnClickListener(new View.OnClickListener() {
