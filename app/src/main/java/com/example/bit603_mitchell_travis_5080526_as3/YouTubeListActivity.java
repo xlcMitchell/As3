@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +32,7 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTubeScopes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +52,23 @@ public class YouTubeListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_you_tube_list); // make sure you have this layout
+        RecyclerView recyclerView = findViewById(R.id.channelRecycleView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        VideoAdapter adapter = new VideoAdapter(video -> {
+            // Handle video click here
+            Toast.makeText(this, "Clicked: " + video.getTitle(), Toast.LENGTH_SHORT).show();
+        }); // empty list at start
+        recyclerView.setAdapter(adapter);
+
+        ChannelViewModel viewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
+
+        //Observe the LiveData
+        viewModel.getVideosLiveData().observe(this, videos -> {
+            if (videos != null) {
+                adapter.setVideos(videos);
+            }
+        });
         channelViewModel = new ChannelViewModel();
         // Initialize the Google OAuth credential
         credential = GoogleAccountCredential.usingOAuth2(

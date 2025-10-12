@@ -3,6 +3,7 @@ package com.example.bit603_mitchell_travis_5080526_as3.viewModel;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -35,6 +36,10 @@ public class ChannelViewModel extends ViewModel {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private MutableLiveData<Channel> channelLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Video>> videosLiveData = new MutableLiveData<>();
+
+    public LiveData<List<Video>> getVideosLiveData(){
+        return videosLiveData;
+    }
     public void writeToFirebase(){
 
     }
