@@ -15,9 +15,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,6 +166,7 @@ public class ChannelViewModel extends ViewModel {
 
                     // TODO: parse video response and create video objects update live data
                     //TODO: Possibly add to database also (check assessment)
+                    parseVideos(json); //parse videos and update live data
                 } else {
                     try {
                         Log.e("JSON_RESPONSE", "Error: " + response.errorBody().string());
@@ -177,5 +181,47 @@ public class ChannelViewModel extends ViewModel {
                 Log.e("JSON_RESPONSE", "Failure: " + t.getMessage());
             }
         });
+    }
+
+    private void parseVideos(JsonObject responseJson) {
+        List<Video> videos = new ArrayList<>();
+
+        if (responseJson == null || !responseJson.has("items")) {
+            Log.e("JSON_REPONSE", "No videos to display");
+            videosLiveData.postValue(videos);
+            return;
+        }
+
+        JsonArray items = responseJson.getAsJsonArray("items");
+
+        for (JsonElement element : items) {
+            JsonObject item = element.getAsJsonObject();
+            JsonObject snippet = item.getAsJsonObject("snippet");
+            //check for title if not present then untitled
+            String title = snippet.has("title") ? snippet.get("title").getAsString() : "Untitled";
+            String videoId = "";
+            String thumbnailUrl = "";
+
+            if (snippet.has("resourceId")) {
+                JsonObject resourceId = snippet.getAsJsonObject("resourceId");
+                if (resourceId.has("videoId")) {
+                    videoId = resourceId.get("videoId").getAsString();
+                }
+            }
+
+            if (snippet.has("thumbnails")) {
+                JsonObject thumbnails = snippet.getAsJsonObject("thumbnails");
+                if (thumbnails.has("medium")) {
+                    thumbnailUrl = thumbnails.getAsJsonObject("medium").get("url").getAsString();
+                } else if (thumbnails.has("default")) {
+                    thumbnailUrl = thumbnails.getAsJsonObject("default").get("url").getAsString();
+                }
+            }
+
+            videos.add(new Video(title, videoId, thumbnailUrl));
+        }
+
+        Log.d("parseVideos", "Parsed " + videos.size() + " videos");
+        videosLiveData.postValue(videos);
     }
 }
