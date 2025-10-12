@@ -56,9 +56,14 @@ public class YouTubeListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         VideoAdapter adapter = new VideoAdapter(video -> {
-            // Handle video click here
-            Toast.makeText(this, "Clicked: " + video.getTitle(), Toast.LENGTH_SHORT).show();
-        }); // empty list at start
+            String videoId = video.getVideoId();
+            Toast.makeText(this, "Id: " + videoId, Toast.LENGTH_SHORT).show();
+            //TODO: start intent to watch video and pass youtube video ID with the intent
+            // empty list at start
+            Intent intent = new Intent(YouTubeListActivity.this,YouTubeVideoPlayerActivity.class);
+            intent.putExtra("videoId",videoId);
+            startActivity(intent);
+        });
         recyclerView.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(ChannelViewModel.class);

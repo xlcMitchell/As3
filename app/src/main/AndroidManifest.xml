@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BIT603_Mitchell_Travis_5080526_AS3">
         <activity
+            android:name=".YouTubeVideoPlayerActivity"
+            android:exported="false" />
+        <activity
             android:name=".YouTubeListActivity"
             android:exported="false" />
         <activity
