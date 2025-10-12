@@ -89,6 +89,7 @@ public class ChannelViewModel extends ViewModel {
                     Log.d("YouTubeAPI", "Channel Title: " + title);
                     parseChannelJson(json,channelId);
                     parseUploadId(json);
+                    fetchVideos(parseUploadId(json),token); //fetch video list method
                 } else {
                     try {
                         Log.e("YouTubeAPI", "Error: " + response.code() + " " + response.message()
@@ -122,8 +123,9 @@ public class ChannelViewModel extends ViewModel {
                 channelLiveData.setValue(channel); //update live data for channel
                 saveOrUpdateChannel(channel);
 
-    }
 
+    }
+    //retrieve upload playlist ID so we can send http request for video list
     private String parseUploadId(JsonObject channelJson) {
         try {
             JsonObject itemsObj = channelJson.getAsJsonArray("items").get(0).getAsJsonObject();
@@ -135,5 +137,45 @@ public class ChannelViewModel extends ViewModel {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void fetchVideos(String uploadsPlaylistId, String accessToken) {
+
+        YouTubeUploadListService service = RetrofitClient.getClient().create(YouTubeUploadListService.class);
+
+        // Prepare the Authorization header
+        String authHeader = "Bearer " + accessToken;
+
+        // Make the Retrofit call
+        Call<JsonObject> call = service.getPlaylistVideos(
+                "snippet,contentDetails",
+                uploadsPlaylistId,
+                50,
+                authHeader
+        );
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonObject json = response.body();
+                    Log.d("JSON_RESPONSE", "Videos JSON: " + json.toString());
+
+                    // TODO: parse video response and create video objects update live data
+                    //TODO: Possibly add to database also (check assessment)
+                } else {
+                    try {
+                        Log.e("JSON_RESPONSE", "Error: " + response.errorBody().string());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("JSON_RESPONSE", "Failure: " + t.getMessage());
+            }
+        });
     }
 }
