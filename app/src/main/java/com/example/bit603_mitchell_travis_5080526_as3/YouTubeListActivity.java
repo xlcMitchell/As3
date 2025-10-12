@@ -46,7 +46,7 @@ public class YouTubeListActivity extends AppCompatActivity {
     private static final int REQUEST_AUTHORIZATION = 1001;
     private GoogleAccountCredential credential;
     private String token;
-    ChannelViewModel channelViewModel;
+    ChannelViewModel viewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,15 +61,16 @@ public class YouTubeListActivity extends AppCompatActivity {
         }); // empty list at start
         recyclerView.setAdapter(adapter);
 
-        ChannelViewModel viewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ChannelViewModel.class);
 
         //Observe the LiveData
         viewModel.getVideosLiveData().observe(this, videos -> {
             if (videos != null) {
+                Log.d("UpdateAdapter","Updating recyclerview");
                 adapter.setVideos(videos);
             }
         });
-        channelViewModel = new ChannelViewModel();
+
         // Initialize the Google OAuth credential
         credential = GoogleAccountCredential.usingOAuth2(
                 this,
@@ -94,7 +95,7 @@ public class YouTubeListActivity extends AppCompatActivity {
                     try {
                         token = credential.getToken();
                         Log.d("YouTubeListActivity", "OAuth Token: " + token);
-                        channelViewModel.fetchChannelData(token); //send request
+                        viewModel.fetchChannelData(token); //send request
                     } catch (UserRecoverableAuthException e) {
                         //executes if the user needs to provide consent.. UserRecoverableAuthException e provides an intent
                         //to achieve this
