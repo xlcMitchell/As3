@@ -1,5 +1,8 @@
 package com.example.bit603_mitchell_travis_5080526_as3;
 
+/*
+ANDROID APP OPTIMISATION
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

@@ -59,7 +59,6 @@ public class YouTubeListActivity extends AppCompatActivity {
             String videoId = video.getVideoId();
             Toast.makeText(this, "Id: " + videoId, Toast.LENGTH_SHORT).show();
             //TODO: start intent to watch video and pass youtube video ID with the intent
-            // empty list at start
             Intent intent = new Intent(YouTubeListActivity.this,YouTubeVideoPlayerActivity.class);
             intent.putExtra("videoId",videoId);
             startActivity(intent);
